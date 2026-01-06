@@ -1,5 +1,5 @@
 <div align="center">
-  🏆 EVENT-DRIVEN LOG MONITORING & ALERTING SYSTEM
+🏆 EVENT-DRIVEN LOG MONITORING & ALERTING SYSTEM
 
 AWS | Cloud | DevOps Project
 
@@ -20,11 +20,11 @@ Optimizes storage costs by archiving old logs
 
 🏗️ Architecture Overview
 
-A highly available, secure, and scalable AWS architecture where application logs generated on EC2 instances are streamed to CloudWatch, analyzed with metric filters, and trigger alerts and automated actions.
+A highly available, secure, and scalable AWS architecture where EC2 logs are streamed to CloudWatch, analyzed with metric filters, and trigger alerts and automated actions.
 
 Components:
 
-EC2 → Hosts log-generating applications
+EC2 → Log-generating application servers
 
 ELB → Distributes traffic across EC2
 
@@ -32,9 +32,9 @@ CloudWatch → Collects and monitors logs
 
 SNS → Sends alerts
 
-SQS → Queues log events for processing
+SQS → Queues log events
 
-Lambda → Serverless processing of events
+Lambda → Processes events serverlessly
 
 S3 & Glacier → Archives logs for cost optimization
 
@@ -43,59 +43,51 @@ S3 & Glacier → Archives logs for cost optimization
 
 Runs log-generating applications in private subnets
 
-Generates:
-
-Application logs
-
-Access logs
-
-System logs
+Generates application, access, and system logs
 
 🔹 IAM – Secure Access Control
 
-IAM roles attached to EC2 allow:
+Allows EC2 to:
 
-Writing logs to CloudWatch
+Write logs to CloudWatch
 
-Uploading logs to S3
+Upload logs to S3
 
-Implements least-privilege access
-
-No hard-coded credentials
+Implements least-privilege access, no hard-coded credentials
 
 🔹 VPC – Network Security
 
 Public Subnet: Bastion host & ELB
 
-Private Subnets: Application EC2 instances
+Private Subnets: EC2 application servers
 
-NAT Gateway: Outbound internet access without exposure
+NAT Gateway: Outbound internet access for private EC2
 
 🔹 CloudWatch – Logging & Monitoring
 
-Streams EC2 logs to Log Groups
+Streams logs from EC2 to Log Groups
 
 Metric filters detect patterns: ERROR, FAILED LOGIN, HTTP 5xx
 
-Automatically triggers alarms
+Triggers alarms automatically
 
 🔹 SNS – Alerts & Notifications
 
-Sends notifications when CloudWatch alarms trigger
+Sends notifications for CloudWatch alarms
 
-Supports: Email, SMS, Slack/webhooks
+Supports Email, SMS, Slack/webhooks
 
 🔹 SQS – Event Queue
 
-Buffers log events from CloudWatch
+Buffers log events
 
 Decouples ingestion from processing
 
-Prevents data loss during traffic spikes
+Prevents data loss during spikes
 
 🔹 Lambda – Event-Driven Processing
 
-Triggered by SQS messages
+Processes messages from SQS
 
 Parses logs, enriches events, triggers alerts
 
@@ -103,11 +95,9 @@ Fully serverless
 
 🔹 S3 & Glacier – Log Archival
 
-Archives logs from CloudWatch
+Archives logs organized by date, application, severity
 
-Organizes by date, application, severity
-
-Glacier used for long-term cost optimization
+Glacier used for long-term storage cost optimization
 
 🔹 CloudTrail – Auditing
 
@@ -129,13 +119,13 @@ Executes scripts without SSH
 
 🔹 ELB – Load Balancing
 
-Distributes traffic across EC2
+Distributes traffic evenly across EC2 instances
 
-Prevents overload and ensures fault tolerance
+Prevents overload and ensures high availability
 
 🔹 Auto Scaling – Dynamic Scalability
 
-Adjusts EC2 instances based on CPU, requests, or log volume
+Adjusts EC2 instance count based on CPU, requests, or log volume
 
 🔄 End-to-End Workflow
 
@@ -156,3 +146,5 @@ Logs queued in SQS
 Lambda processes log events
 
 Logs archived → S3 → Glacier
+
+Auto Scaling adjusts EC2 capacity
