@@ -1,200 +1,156 @@
-📊 Event-Driven Log Monitoring & Alerting System
+📊 Project: Event-Driven Log Monitoring & Alerting System
 
 AWS | Cloud | DevOps Project
 
-🎯 Project Objective
+🎯 Project Goal
 
-Designed and implemented an event-driven monitoring system that collects application logs, detects critical events in real time, sends automated alerts, and scales dynamically during traffic spikes—while ensuring security and cost optimization.
+Design and implement an event-driven monitoring system that:
 
-🏗️ Architecture Summary
+Collects application logs in real time
 
-A highly available, secure, and scalable AWS architecture where logs generated on EC2 instances are streamed to CloudWatch, analyzed using metric filters, and trigger alerts, serverless processing, and automated scaling actions.
+Detects critical events automatically
 
-🧩 AWS Services & Responsibilities
+Sends alerts via email, SMS, or Slack
+
+Scales EC2 instances dynamically during traffic spikes
+
+Optimizes storage costs by archiving old logs
+
+🏗️ Architecture Overview
+
+A highly available, secure, and scalable AWS architecture where logs generated on EC2 instances are streamed to CloudWatch, analyzed with metric filters, and trigger alerts and automated actions.
+
+Architecture Components:
+
+EC2 → Log-generating application servers
+
+ELB → Distributes traffic across EC2
+
+CloudWatch → Collects and monitors logs
+
+SNS → Sends alerts
+
+SQS → Queues log events
+
+Lambda → Processes events serverlessly
+
+S3 & Glacier → Archives logs for cost optimization
+
+🔧 AWS Services & Responsibilities
 🔹 EC2 – Application & Log Generation
 
-Hosts log-generating applications
+Runs log-generating applications
 
-Deployed in private subnets for security
+Deployed in private subnets
 
-Generates:
+Logs include application errors, access logs, and system logs
 
-Application logs
+🔹 IAM – Secure Access Control
 
-Access logs
+Roles attached to EC2 allow:
 
-System logs
+Writing logs to CloudWatch
 
-🔹 IAM – Identity & Access Management
+Uploading logs to S3
 
-IAM roles attached to EC2 allow:
+Least privilege policy; no hard-coded credentials
 
-Writing logs to CloudWatch Logs
+🔹 VPC – Network Security
 
-Uploading archived logs to S3
+Public Subnet: Bastion host & ELB
 
-Implements least-privilege access
+Private Subnets: Application EC2 instances
 
-No hard-coded credentials
-
-🔹 VPC – Secure Network Architecture
-
-Public Subnet
-
-Bastion Host (secure SSH access)
-
-Application Load Balancer (ELB)
-
-Private Subnets
-
-Application EC2 instances
-
-NAT Gateway
-
-Enables outbound internet access for private EC2 without exposure
+NAT Gateway: Outbound internet access without exposure
 
 🔹 CloudWatch – Logging & Monitoring
 
-Streams logs from EC2 into Log Groups
+Streams EC2 logs to Log Groups
 
-Metric Filters detect patterns such as:
-
-ERROR
-
-FAILED LOGIN
-
-HTTP 5xx
+Metric filters detect patterns like: ERROR, FAILED LOGIN, HTTP 5xx
 
 Triggers alarms automatically
 
-🔹 SNS – Alerting & Notifications
+🔹 SNS – Alerting
 
 CloudWatch alarms publish messages to SNS topics
 
-Notifications sent via:
-
-Email
-
-SMS
-
-Slack / third-party tools (webhooks)
+Notifications via: Email, SMS, Slack / Webhooks
 
 🔹 SQS – Log Event Queue
 
 Buffers log events from CloudWatch
 
-Decouples log ingestion from processing
+Decouples ingestion from processing
 
-Prevents message loss during traffic spikes
+Prevents data loss during spikes
 
-🔹 AWS Lambda – Event-Driven Processing
+🔹 Lambda – Event-Driven Processing
 
-Triggered by messages from SQS
+Triggered by SQS messages
 
-Performs:
+Performs log parsing, enrichment, and automated alerting
 
-Log parsing
+Fully serverless, no infrastructure management
 
-Event enrichment
-
-Alerting or remediation actions
-
-Fully serverless (no infrastructure management)
-
-🔹 S3 – Log Archival Storage
+🔹 S3 – Log Archival
 
 Archives logs from CloudWatch
 
-Logs organized by:
+Organized by date, application, and severity
 
-Date
+🔹 CloudTrail – Auditing
 
-Application
+Tracks API activity for: IAM, EC2, S3
 
-Severity level
+Enables security auditing and compliance
 
-🔹 CloudTrail – Auditing & Compliance
+🔹 Secrets Manager – Credential Storage
 
-Tracks all API activity related to:
+Stores API keys and tokens (Slack, PagerDuty, etc.)
 
-IAM changes
+Automatic secret rotation
 
-EC2 lifecycle events
+🔹 Systems Manager – Automation
 
-S3 access
+Automates EC2 patching and log cleanup
 
-Supports security audits and compliance requirements
-
-🔹 Secrets Manager – Secure Secrets Storage
-
-Stores sensitive data such as:
-
-Slack tokens
-
-PagerDuty keys
-
-External API credentials
-
-Automatic secret rotation enabled
-
-🔹 Systems Manager – Automation & Maintenance
-
-Used for:
-
-EC2 patch management
-
-Log cleanup
-
-Running maintenance scripts
-
-Access without SSH (Session Manager)
+Runs scripts without SSH access
 
 🔹 ELB – Load Balancing
 
-Distributes incoming traffic across EC2 instances
+Distributes traffic across EC2 instances
 
-Prevents log overload on a single server
-
-Improves availability and fault tolerance
+Prevents overload and improves fault tolerance
 
 🔹 Auto Scaling – Dynamic Scalability
 
-Automatically scales EC2 based on:
+Adjusts EC2 instance count based on CPU, request volume, or log load
 
-CPU utilization
+🔹 Cost Optimization
 
-Log volume
+Old logs moved from S3 → Glacier automatically
 
-Request count
-
-Maintains performance during peak traffic
-
-🔹 Cost Optimization Strategy
-
-Older logs transitioned automatically:
-
-S3 → S3 Glacier
-
-Lifecycle policies reduce long-term storage cost
+Reduces long-term storage cost using lifecycle policies
 
 🔄 End-to-End Workflow
 
-User requests reach ELB
+User request → ELB
 
-ELB forwards traffic to EC2 instances
+ELB forwards request → EC2
 
-Applications generate logs
+EC2 generates logs
 
-Logs stream to CloudWatch
+Logs → CloudWatch
 
-Metric filters detect critical patterns
+Metric filters detect errors
 
 Alerts sent via SNS
 
-Log events queued in SQS
+Logs queued in SQS
 
 Lambda processes log events
 
-Logs archived to S3 → Glacier
+Logs archived → S3 → Glacier
 
 Auto Scaling adjusts EC2 capacity
