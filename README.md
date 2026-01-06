@@ -1,12 +1,10 @@
-<div align="center">
 🏆 EVENT-DRIVEN LOG MONITORING & ALERTING SYSTEM
 
 AWS | Cloud | DevOps Project
 
-</div>
-🎯 Project Goal
+🎯 Project Objective
 
-Design and implement an event-driven monitoring system that:
+Build a production-style, event-driven monitoring system that:
 
 Collects application logs in real time
 
@@ -16,135 +14,134 @@ Sends alerts via Email, SMS, or Slack
 
 Dynamically scales EC2 instances during traffic spikes
 
-Optimizes storage costs by archiving old logs
+Archives old logs to S3 → Glacier for cost optimization
 
-🏗️ Architecture Overview
+🏗️ Architecture Flow (Simple)
+User
+  ↓
+ELB (Elastic Load Balancer)
+  ↓
+EC2 Instances (Private Subnets)
+  ↓
+CloudWatch (Log Streaming & Metric Filters)
+  ↓
+SNS Notifications / SQS Queue
+  ↓
+Lambda Functions (Event Processing)
+  ↓
+S3 / Glacier (Log Archival)
+Auto Scaling adjusts EC2 instances dynamically
 
-A highly available, secure, and scalable AWS architecture where EC2 logs are streamed to CloudWatch, analyzed with metric filters, and trigger alerts and automated actions.
+🧩 AWS Services Used
 
-Components:
+EC2 – Hosts applications & generates logs
 
-EC2 → Log-generating application servers
+ELB – Distributes traffic across EC2 instances
 
-ELB → Distributes traffic across EC2
+Auto Scaling – Adjusts EC2 instance count based on load
 
-CloudWatch → Collects and monitors logs
+CloudWatch – Logs streaming, monitoring & alarms
 
-SNS → Sends alerts
+SNS – Sends notifications when alarms trigger
 
-SQS → Queues log events
+SQS – Buffers log events for serverless processing
 
-Lambda → Processes events serverlessly
+Lambda – Event-driven log processing
 
-S3 & Glacier → Archives logs for cost optimization
+S3 & Glacier – Log storage & archival
 
-🔧 AWS Services & Responsibilities
-🔹 EC2 – Application & Log Generation
+IAM – Secure access & role management
 
-Runs log-generating applications in private subnets
+Secrets Manager – Stores API keys securely
 
-Generates application, access, and system logs
+Systems Manager – Automates maintenance & patching
 
-🔹 IAM – Secure Access Control
+CloudTrail – Auditing and compliance tracking
 
-Allows EC2 to:
+⚙️ Step-by-Step Implementation
+🔹 Step 1: Stream EC2 Logs to CloudWatch
 
-Write logs to CloudWatch
+Attach IAM role to EC2 allowing CloudWatch Logs access
 
-Upload logs to S3
+Install CloudWatch agent on EC2:
 
-Implements least-privilege access, no hard-coded credentials
+sudo yum install amazon-cloudwatch-agent -y
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
 
-🔹 VPC – Network Security
 
-Public Subnet: Bastion host & ELB
+Start agent:
 
-Private Subnets: EC2 application servers
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a start
 
-NAT Gateway: Outbound internet access for private EC2
+🔹 Step 2: Create CloudWatch Log Group & Metric Filters
 
-🔹 CloudWatch – Logging & Monitoring
+Go to CloudWatch → Logs → Create log group
 
-Streams logs from EC2 to Log Groups
+Add metric filters for patterns like: ERROR, FAILED LOGIN, HTTP 5xx
 
-Metric filters detect patterns: ERROR, FAILED LOGIN, HTTP 5xx
+Trigger CloudWatch alarms based on these metrics
 
-Triggers alarms automatically
+🔹 Step 3: Configure SNS for Alerts
 
-🔹 SNS – Alerts & Notifications
+Go to SNS → Topics → Create topic
 
-Sends notifications for CloudWatch alarms
+Name: log-alerts
 
-Supports Email, SMS, Slack/webhooks
+Create email subscription and confirm via email
 
-🔹 SQS – Event Queue
+🔹 Step 4: Setup SQS Queue for Event Processing
 
-Buffers log events
+Go to SQS → Create Queue
 
-Decouples ingestion from processing
+Name: log-event-queue
 
-Prevents data loss during spikes
+CloudWatch alarms push messages to this queue
 
-🔹 Lambda – Event-Driven Processing
+🔹 Step 5: Configure Lambda Function
 
-Processes messages from SQS
+Go to Lambda → Create Function
 
-Parses logs, enriches events, triggers alerts
+Trigger: SQS log-event-queue
 
-Fully serverless
+Function code: parse logs, enrich events, trigger remediation or alerts
 
-🔹 S3 & Glacier – Log Archival
+🔹 Step 6: Archive Logs to S3 & Glacier
 
-Archives logs organized by date, application, severity
+Go to S3 → Create bucket
 
-Glacier used for long-term storage cost optimization
+Enable lifecycle policy to move logs to Glacier after 30 days
 
-🔹 CloudTrail – Auditing
+Optional CLI verification:
 
-Tracks API activity: IAM, EC2, S3
+aws s3 cp app.log s3://log-archive-bucket/2026/01/
+aws s3 ls s3://log-archive-bucket
 
-Enables security compliance
+🔹 Step 7: Auto Scaling EC2 Instances
 
-🔹 Secrets Manager – Credential Storage
+Set Auto Scaling policies for EC2 based on:
 
-Stores API keys (Slack, PagerDuty, external integrations)
+CPU utilization
 
-Automatic rotation enabled
+Request count
 
-🔹 Systems Manager – Automation
+Log volume
 
-Automates EC2 patching and log cleanup
+Auto Scaling ensures performance during traffic spikes
 
-Executes scripts without SSH
+🔐 Security Best Practices
 
-🔹 ELB – Load Balancing
+Use IAM roles, no hardcoded credentials
 
-Distributes traffic evenly across EC2 instances
+CloudWatch monitoring for proactive alerting
 
-Prevents overload and ensures high availability
+Secrets stored in Secrets Manager
 
-🔹 Auto Scaling – Dynamic Scalability
+Auto Scaling to handle traffic spikes safely
 
-Adjusts EC2 instance count based on CPU, requests, or log volume
+EC2 instances deployed in private subnets
 
-🔄 End-to-End Workflow
 
-User request → ELB
 
-ELB forwards request → EC2
+Secure, compliant design
 
-EC2 generates logs
-
-Logs → CloudWatch
-
-Metric filters detect critical patterns
-
-Alerts sent via SNS
-
-Logs queued in SQS
-
-Lambda processes log events
-
-Logs archived → S3 → Glacier
-
-Auto Scaling adjusts EC2 capacity
+Cost-optimized log storage with S3 → Glacier
