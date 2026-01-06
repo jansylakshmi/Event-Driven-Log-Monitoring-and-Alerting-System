@@ -1,7 +1,8 @@
-📊 Project: Event-Driven Log Monitoring & Alerting System
+🏆 EVENT-DRIVEN LOG MONITORING & ALERTING SYSTEM
 
 AWS | Cloud | DevOps Project
 
+</div>
 🎯 Project Goal
 
 Design and implement an event-driven monitoring system that:
@@ -10,19 +11,19 @@ Collects application logs in real time
 
 Detects critical events automatically
 
-Sends alerts via email, SMS, or Slack
+Sends alerts via Email, SMS, or Slack
 
-Scales EC2 instances dynamically during traffic spikes
+Dynamically scales EC2 instances during traffic spikes
 
 Optimizes storage costs by archiving old logs
 
 🏗️ Architecture Overview
 
-A highly available, secure, and scalable AWS architecture where logs generated on EC2 instances are streamed to CloudWatch, analyzed with metric filters, and trigger alerts and automated actions.
+A highly available, secure, and scalable AWS architecture where application logs generated on EC2 instances are streamed to CloudWatch, analyzed with metric filters, and trigger alerts and automated actions.
 
-Architecture Components:
+Components:
 
-EC2 → Log-generating application servers
+EC2 → Hosts log-generating applications
 
 ELB → Distributes traffic across EC2
 
@@ -30,30 +31,36 @@ CloudWatch → Collects and monitors logs
 
 SNS → Sends alerts
 
-SQS → Queues log events
+SQS → Queues log events for processing
 
-Lambda → Processes events serverlessly
+Lambda → Serverless processing of events
 
 S3 & Glacier → Archives logs for cost optimization
 
 🔧 AWS Services & Responsibilities
 🔹 EC2 – Application & Log Generation
 
-Runs log-generating applications
+Runs log-generating applications in private subnets
 
-Deployed in private subnets
+Generates:
 
-Logs include application errors, access logs, and system logs
+Application logs
+
+Access logs
+
+System logs
 
 🔹 IAM – Secure Access Control
 
-Roles attached to EC2 allow:
+IAM roles attached to EC2 allow:
 
 Writing logs to CloudWatch
 
 Uploading logs to S3
 
-Least privilege policy; no hard-coded credentials
+Implements least-privilege access
+
+No hard-coded credentials
 
 🔹 VPC – Network Security
 
@@ -67,71 +74,67 @@ NAT Gateway: Outbound internet access without exposure
 
 Streams EC2 logs to Log Groups
 
-Metric filters detect patterns like: ERROR, FAILED LOGIN, HTTP 5xx
+Metric filters detect patterns: ERROR, FAILED LOGIN, HTTP 5xx
 
-Triggers alarms automatically
+Automatically triggers alarms
 
-🔹 SNS – Alerting
+🔹 SNS – Alerts & Notifications
 
-CloudWatch alarms publish messages to SNS topics
+Sends notifications when CloudWatch alarms trigger
 
-Notifications via: Email, SMS, Slack / Webhooks
+Supports: Email, SMS, Slack/webhooks
 
-🔹 SQS – Log Event Queue
+🔹 SQS – Event Queue
 
 Buffers log events from CloudWatch
 
 Decouples ingestion from processing
 
-Prevents data loss during spikes
+Prevents data loss during traffic spikes
 
 🔹 Lambda – Event-Driven Processing
 
 Triggered by SQS messages
 
-Performs log parsing, enrichment, and automated alerting
+Parses logs, enriches events, triggers alerts
 
-Fully serverless, no infrastructure management
+Fully serverless
 
-🔹 S3 – Log Archival
+🔹 S3 & Glacier – Log Archival
 
 Archives logs from CloudWatch
 
-Organized by date, application, and severity
+Organizes by date, application, severity
+
+Glacier used for long-term cost optimization
 
 🔹 CloudTrail – Auditing
 
-Tracks API activity for: IAM, EC2, S3
+Tracks API activity: IAM, EC2, S3
 
-Enables security auditing and compliance
+Enables security compliance
 
 🔹 Secrets Manager – Credential Storage
 
-Stores API keys and tokens (Slack, PagerDuty, etc.)
+Stores API keys (Slack, PagerDuty, external integrations)
 
-Automatic secret rotation
+Automatic rotation enabled
 
 🔹 Systems Manager – Automation
 
 Automates EC2 patching and log cleanup
 
-Runs scripts without SSH access
+Executes scripts without SSH
 
 🔹 ELB – Load Balancing
 
-Distributes traffic across EC2 instances
+Distributes traffic across EC2
 
-Prevents overload and improves fault tolerance
+Prevents overload and ensures fault tolerance
 
 🔹 Auto Scaling – Dynamic Scalability
 
-Adjusts EC2 instance count based on CPU, request volume, or log load
-
-🔹 Cost Optimization
-
-Old logs moved from S3 → Glacier automatically
-
-Reduces long-term storage cost using lifecycle policies
+Adjusts EC2 instances based on CPU, requests, or log volume
 
 🔄 End-to-End Workflow
 
@@ -143,7 +146,7 @@ EC2 generates logs
 
 Logs → CloudWatch
 
-Metric filters detect errors
+Metric filters detect critical patterns
 
 Alerts sent via SNS
 
@@ -152,5 +155,3 @@ Logs queued in SQS
 Lambda processes log events
 
 Logs archived → S3 → Glacier
-
-Auto Scaling adjusts EC2 capacity
